@@ -37,8 +37,8 @@ def measure_peak_memory_and_time(func, *args, **kwargs):
     monitor_thread.join()
 
     return {
-        'peak_memory [MB]': peak_memory_usage[0],
-        'execution_time [s]': execution_time
+        'Index construction memory [MB]': peak_memory_usage[0],
+        'Index construction time [s]': execution_time
     }
 
 

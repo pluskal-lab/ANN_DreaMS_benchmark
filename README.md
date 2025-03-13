@@ -32,7 +32,7 @@ wget -P data https://huggingface.co/datasets/roman-bushuiev/ANN_DreaMS_benchmark
 To run a benchmark specify an ANN backend and a benchmarking dataset:
 
 ```python3
-python3 benchmark.py --ann_backend pynndescent --dataset_name GeMS_A1_DreaMS_rand50k
+python3 benchmark.py --ann_backend pynndescent --dataset_name GeMS_A1_DreaMS_rand50k --index_kwargs '{"k": 100}'
 ```
 
 Expected output:
@@ -41,14 +41,15 @@ Expected output:
 Benchmark results:
 index_backend: pynndescent
 dataset_name: GeMS_A1_DreaMS_rand50k
-peak_memory [MB]: 1310.5156
-execution_time [s]: 30.0428
-Recall @ 1 mean: 0.9370
-Recall @ 1 std: 0.2430
-Recall @ 10 mean: 0.8958
-Recall @ 10 std: 0.1460
-Query time mean [s]: 0.0169
-Query time std [s]: 0.5275
+Index construction memory [MB]: 1765.4844
+Index construction time [s]: 29.3165
+Recall @ 1 mean: 0.9680
+Recall @ 1 std: 0.1760
+Recall @ 10 mean: 0.9385
+Recall @ 10 std: 0.0956
+Query time mean [s]: 0.0099
+Query time std [s]: 0.3067
+index_kwargs: {'k': 100}
 ```
 
 ### Implementing and benchmarkign new `matchms` ANN backend

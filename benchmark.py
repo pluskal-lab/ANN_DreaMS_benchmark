@@ -2,6 +2,7 @@ import argparse
 import psutil
 import time
 import threading
+from datetime import datetime
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
@@ -42,19 +43,36 @@ def measure_peak_memory_and_time(func, *args, **kwargs):
     }
 
 
-def benchmark(ann_backend: str, dataset_name: str):
+def benchmark(ann_backend: str, dataset_name: str, index_kwargs: dict = None):
+    if index_kwargs is None:
+        index_kwargs = {}
 
     embs_path = f"data/{dataset_name}.npy"
     benchmark_path = f"data/{dataset_name}.benchmark.npy"
     embs_query_path = f"data/MassSpecGym_DreaMS_rand1k.npy"
-    res = {"index_backend": ann_backend, "dataset_name": dataset_name}
+    res = {
+        "index_backend": ann_backend,
+        "dataset_name": dataset_name,
+    }
 
     emb_sim = BaseEmbeddingSimilarity(similarity="cosine")
 
     # Benchmark index construction
+    if "k" in index_kwargs:
+        k = index_kwargs["k"]
+        del index_kwargs["k"]
+    else:
+        k = 10
     res.update(
-        measure_peak_memory_and_time(emb_sim.build_ann_index, embeddings_path=embs_path, index_backend=ann_backend)
+        measure_peak_memory_and_time(
+            emb_sim.build_ann_index,
+            embeddings_path=embs_path,
+            index_backend=ann_backend,
+            k=k,
+            **index_kwargs
+        )
     )
+    index_kwargs["k"] = k
     
     # Benchmark index search accuracy
     embs = np.load(embs_path)
@@ -91,6 +109,8 @@ def benchmark(ann_backend: str, dataset_name: str):
     res["Query time mean [s]"] = np.mean(query_times)
     res["Query time std [s]"] = np.std(query_times)
 
+    res["index_kwargs"] = index_kwargs
+
     return res
 
 
@@ -101,10 +121,16 @@ if __name__ == "__main__":
     parser.add_argument('--dataset_name', type=str, default='GeMS_A1_DreaMS_rand50k',
                       help='Name of dataset to benchmark. One of GeMS_A1_DreaMS_rand50k, GeMS_A1_DreaMS_rand500k, '
                       'GeMS_A1_DreaMS_rand5M.')
+    parser.add_argument('--index_kwargs', type=str, default='{}',
+                      help='JSON string of kwargs to pass to build_ann_index')
     
     args = parser.parse_args()
     
-    res = benchmark(ann_backend=args.ann_backend, dataset_name=args.dataset_name)
+    # Parse index_kwargs from JSON string
+    import json
+    index_kwargs = json.loads(args.index_kwargs)
+    
+    res = benchmark(ann_backend=args.ann_backend, dataset_name=args.dataset_name, index_kwargs=index_kwargs)
     print("\nBenchmark results:")
     for key, value in res.items():
         if isinstance(value, float):
@@ -113,5 +139,6 @@ if __name__ == "__main__":
             print(f"{key}: {value}")
             
     # Create CSV filename from backend and dataset
-    csv_path = Path("results") / f"{args.ann_backend}_{args.dataset_name}.csv"
+    current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    csv_path = Path("results") / f"{args.ann_backend}_{args.dataset_name}_{current_time}.csv"
     pd.DataFrame([res]).to_csv(csv_path, index=False)

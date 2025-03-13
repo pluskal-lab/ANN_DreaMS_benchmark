@@ -1,0 +1,2 @@
+index_backend,dataset_name,Index construction memory [MB],Index construction time [s],Recall @ 1 mean,Recall @ 1 std,Recall @ 10 mean,Recall @ 10 std,Query time mean [s],Query time std [s],index_kwargs
+pynndescent,GeMS_A1_DreaMS_rand50k,1765.484375,29.31645894050598,0.968,0.17600000000000002,0.9385,0.09564387068704401,0.009887176752090453,0.3066680170427869,{'k': 100}

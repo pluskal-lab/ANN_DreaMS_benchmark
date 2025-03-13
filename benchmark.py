@@ -58,6 +58,7 @@ def benchmark(ann_backend: str, dataset_name: str, index_kwargs: dict = None):
     emb_sim = BaseEmbeddingSimilarity(similarity="cosine")
 
     # Benchmark index construction
+    print('Building index...')
     if "k" in index_kwargs:
         k = index_kwargs["k"]
         del index_kwargs["k"]
@@ -73,9 +74,9 @@ def benchmark(ann_backend: str, dataset_name: str, index_kwargs: dict = None):
         )
     )
     index_kwargs["k"] = k
-    
+    print('Index built')
+
     # Benchmark index search accuracy
-    embs = np.load(embs_path)
     embs_query = np.load(embs_query_path)
     benchmark_data = np.load(benchmark_path)
     gt_indices = benchmark_data[:, 0, :].astype(int)

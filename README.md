@@ -6,7 +6,7 @@ A benchmark for approximate nearest neighbor seacrh within large-scale DreaMS em
 
 ### Environment prepeation
 
-The environment requires a matchms installation from this fork: https://github.com/roman-bushuiev/matchms/tree/embedding_similarity and a couple of additional libraries `pip install tqdm`, `pip install h5py`.
+The environment requires a [matchms installation](https://github.com/matchms/matchms) and a couple of additional libraries `pip install tqdm`, `pip install h5py`.
 
 ### Data download
 
@@ -52,14 +52,14 @@ Query time std [s]: 0.3067
 index_kwargs: {'k': 100}
 ```
 
-### Implementing and benchmarkign new `matchms` ANN backend
+### Implementing and benchmarking new `matchms` ANN backend
 
 `benchmark.py` code executes `BaseEmbeddingSimilarity(similarity="cosine", index_backend={ann_backend})` from matchms.
-So, to evaluate a new backend one needs to implement it within a `BaseEmbeddingSimilarity` class [here](https://github.com/roman-bushuiev/matchms/blob/cb125728aa1580c49eff060a8da93fedd4426d12/matchms/similarity/BaseEmbeddingSimilarity.py#L113).
+So, to evaluate a new backend one needs to implement it within a `BaseEmbeddingSimilarity` class [here](https://github.com/matchms/matchms/blob/e5318eca72af65309131ebb7d10229d4a86d5417/matchms/similarity/BaseEmbeddingSimilarity.py#L215), for example in a locally installed fork of the matchms repository.
 
 ## TODO list:
 - [] Evaluate FAISS.
 - [] Evaluate annoy.
 - [] Evaluate Voyager.
-- [] Evaluate pynndescent (the only backend implemented in matchms so far).
+- [x] Evaluate pynndescent (the only backend implemented in matchms so far).
 - [] Explore other packages.
